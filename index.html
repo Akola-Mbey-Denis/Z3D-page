@@ -8,6 +8,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zero-Shot Novel Depth Synthesis Using 3D Foundation Models Scene Representations</title>
 
+  <!-- Speed up the CDN-hosted three.js module fetches by opening the
+       connection early (DNS + TLS) instead of waiting until the first
+       <script type="module"> import is parsed. -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script> -->
   <script>
@@ -195,7 +200,7 @@
         <h2 class="title is-3">Video</h2>
         <div class="publication-video">
           <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
         </div>
       </div>
     </div>
@@ -274,6 +279,24 @@
   z-index: 2;
 }
 
+/* Overlay shown inside a point-cloud viewer div while its .glb is still
+   downloading/parsing, so a slow load reads as "loading" instead of a
+   blank/broken cell. Toggled from JS in loadIntoViewer(). */
+.pc-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 17, 17, 0.85);
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
 .pc-hint {
   font-size: 13px;
   color: #666;
@@ -324,7 +347,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
         <h2 class="title is-3">1 Source view - 1 Target view : Depth Map Comparison</h2>
-       
+
 
 
         <div class="pc-page-wrap">
@@ -338,13 +361,13 @@
             <!-- Featured row: source image, GT depth (larger), target image -->
             <div class="pc-top-row">
               <div class="pc-cell"><span class="pc-label">Source Image</span>
-                <img id="depth-source-img" src="" alt="source" />
+                <img id="depth-source-img" src="" alt="source" loading="lazy" />
               </div>
               <div class="pc-cell"><span class="pc-label">GT</span>
-                <img id="depth-gt-img" src="" alt="gt depth" />
+                <img id="depth-gt-img" src="" alt="gt depth" loading="lazy" />
               </div>
               <div class="pc-cell"><span class="pc-label">Target Image</span>
-                <img id="depth-target-img" src="" alt="target" />
+                <img id="depth-target-img" src="" alt="target" loading="lazy" />
               </div>
             </div>
 
@@ -352,25 +375,25 @@
             <div class="pc-grid">
 
               <div class="pc-cell"><span class="pc-label">VGGT</span>
-                <img id="depth-vggt-img" src="" alt="vggt depth" />
+                <img id="depth-vggt-img" src="" alt="vggt depth" loading="lazy" />
               </div>
 
               <div class="pc-cell"><span class="pc-label">VGGT-DD</span>
-                <img id="depth-dd-img" src="" alt="dd depth" />
+                <img id="depth-dd-img" src="" alt="dd depth" loading="lazy" />
               </div>
 
               <div class="pc-cell"><span class="pc-label">VGGT-Z3D</span>
-                <img id="depth-z3d-img" src="" alt="z3d depth" />
+                <img id="depth-z3d-img" src="" alt="z3d depth" loading="lazy" />
               </div>
 
               <div class="pc-cell"><span class="pc-label">WM</span>
-                <img id="depth-wm-img" src="" alt="wm depth" />
+                <img id="depth-wm-img" src="" alt="wm depth" loading="lazy" />
               </div>
               <div class="pc-cell"><span class="pc-label">WM-DD</span>
-                <img id="depth-wm-dd-img" src="" alt="wm-dd depth" />
+                <img id="depth-wm-dd-img" src="" alt="wm-dd depth" loading="lazy" />
               </div>
               <div class="pc-cell"><span class="pc-label">WM-Z3D</span>
-                <img id="depth-wm-z3d-img" src="" alt="wm-z3d depth" />
+                <img id="depth-wm-z3d-img" src="" alt="wm-z3d depth" loading="lazy" />
               </div>
 
             </div>
@@ -381,7 +404,7 @@
     baseline (VGGT-DD, WM-DD) contain patchy artifacts, whereas Z3D counterparts (VGGT-Z3D, WM-Z3D) yields smoother, more
     coherent depth structure. NB: Both Z3D and DD models do not recieve the target view image(s) as input(s).
   </p>
-</div>  
+</div>
 
             <p class="pc-hint">Pick an example above to switch scenes.</p>
           </div>
@@ -595,42 +618,42 @@
 
             <!-- Column 1: Source / Target -->
             <div class="dg-cell"><span class="dg-label">Source Image</span>
-              <img id="vggt-dg-source-img" src="" alt="source" />
+              <img id="vggt-dg-source-img" src="" alt="source" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">Target Image</span>
-              <img id="vggt-dg-target-img" src="" alt="target" />
+              <img id="vggt-dg-target-img" src="" alt="target" loading="lazy" />
             </div>
 
             <!-- Column 2: GT Depth / VGGT Depth -->
             <div class="dg-cell"><span class="dg-label">GT</span>
-              <img id="vggt-dg-gt-depth-img" src="" alt="gt depth" />
+              <img id="vggt-dg-gt-depth-img" src="" alt="gt depth" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">VGGT</span>
-              <img id="vggt-dg-pred-depth-img" src="" alt="vggt depth" />
+              <img id="vggt-dg-pred-depth-img" src="" alt="vggt depth" loading="lazy" />
             </div>
 
             <!-- Column 3: VGGT-DD Depth / Z3D-VGGT Depth -->
             <div class="dg-cell"><span class="dg-label">VGGT-DD</span>
-              <img id="vggt-dg-dd-depth-img" src="" alt="vggt-dd depth" />
+              <img id="vggt-dg-dd-depth-img" src="" alt="vggt-dd depth" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">VGGT-Z3D</span>
-              <img id="vggt-dg-z3d-depth-img" src="" alt="z3d-vggt depth" />
+              <img id="vggt-dg-z3d-depth-img" src="" alt="z3d-vggt depth" loading="lazy" />
             </div>
 
             <!-- Column 4: VGGT-DD Depth Gradient / Z3D-VGGT Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">VGGT-DD Depth Grad </span>
-              <img id="vggt-dg-dd-grad-img" src="" alt="vggt-dd depth gradient" />
+              <img id="vggt-dg-dd-grad-img" src="" alt="vggt-dd depth gradient" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">VGGT-Z3D Depth Grad</span>
-              <img id="vggt-dg-z3d-grad-img" src="" alt="z3d-vggt depth gradient" />
+              <img id="vggt-dg-z3d-grad-img" src="" alt="z3d-vggt depth gradient" loading="lazy" />
             </div>
 
             <!-- Column 5: VGGT-DD Zoomed Depth Gradient / Z3D-VGGT Zoomed Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">VGGT-DD</span>
-              <img id="vggt-dg-dd-grad-zoom-img" src="" alt="vggt-dd zoomed depth gradient" />
+              <img id="vggt-dg-dd-grad-zoom-img" src="" alt="vggt-dd zoomed depth gradient" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">VGGT-Z3D</span>
-              <img id="vggt-dg-z3d-grad-zoom-img" src="" alt="z3d-vggt zoomed depth gradient" />
+              <img id="vggt-dg-z3d-grad-zoom-img" src="" alt="z3d-vggt zoomed depth gradient" loading="lazy" />
             </div>
 
           </div>
@@ -641,7 +664,7 @@
     that VGGT-DD produces noisy, inconsistent gradients, whereas VGGT-Z3D yields smoother, more
     coherent depth structure. The last column shows the zoomed in view of the highlighted section in the depth gradient images.
   </p>
-</div>  
+</div>
           <p class="dg-hint">Pick an example above to switch scenes.</p>
         </div>
 
@@ -732,42 +755,42 @@
 
             <!-- Column 1: Source / Target -->
             <div class="dg-cell"><span class="dg-label">Source Image</span>
-              <img id="wm-dg-source-img" src="" alt="source" />
+              <img id="wm-dg-source-img" src="" alt="source" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">Target Image</span>
-              <img id="wm-dg-target-img" src="" alt="target" />
+              <img id="wm-dg-target-img" src="" alt="target" loading="lazy" />
             </div>
 
             <!-- Column 2: GT Depth / WM Depth -->
             <div class="dg-cell"><span class="dg-label">GT</span>
-              <img id="wm-dg-gt-depth-img" src="" alt="gt depth" />
+              <img id="wm-dg-gt-depth-img" src="" alt="gt depth" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">WM</span>
-              <img id="wm-dg-pred-depth-img" src="" alt="wm depth" />
+              <img id="wm-dg-pred-depth-img" src="" alt="wm depth" loading="lazy" />
             </div>
 
             <!-- Column 3: WM-DD Depth / Z3D-WM Depth -->
             <div class="dg-cell"><span class="dg-label">WM-DD</span>
-              <img id="wm-dg-dd-depth-img" src="" alt="wm-dd depth" />
+              <img id="wm-dg-dd-depth-img" src="" alt="wm-dd depth" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">WM-Z3D</span>
-              <img id="wm-dg-z3d-depth-img" src="" alt="z3d-wm depth" />
+              <img id="wm-dg-z3d-depth-img" src="" alt="z3d-wm depth" loading="lazy" />
             </div>
 
             <!-- Column 4: WM-DD Depth Gradient / Z3D-WM Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">WM-DD Depth Grad</span>
-              <img id="wm-dg-dd-grad-img" src="" alt="wm-dd depth gradient" />
+              <img id="wm-dg-dd-grad-img" src="" alt="wm-dd depth gradient" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">WM-Z3D Depth Grad</span>
-              <img id="wm-dg-z3d-grad-img" src="" alt="z3d-wm depth gradient" />
+              <img id="wm-dg-z3d-grad-img" src="" alt="z3d-wm depth gradient" loading="lazy" />
             </div>
 
             <!-- Column 5: WM-DD Zoomed Depth Gradient / Z3D-WM Zoomed Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">WM-DD</span>
-              <img id="wm-dg-dd-grad-zoom-img" src="" alt="wm-dd zoomed depth gradient" />
+              <img id="wm-dg-dd-grad-zoom-img" src="" alt="wm-dd zoomed depth gradient" loading="lazy" />
             </div>
             <div class="dg-cell"><span class="dg-label">WM-Z3D</span>
-              <img id="wm-dg-z3d-grad-zoom-img" src="" alt="z3d-wm zoomed depth gradient" />
+              <img id="wm-dg-z3d-grad-zoom-img" src="" alt="wm-z3d zoomed depth gradient" loading="lazy" />
             </div>
 
           </div>
@@ -782,7 +805,7 @@
     that WM-DD produces noisy, inconsistent gradients, whereas WM-Z3D yields smoother, more
     coherent depth structure. The last column shows the zoomed in view of the highlighted section in the depth gradient images.
   </p>
-</div>  
+</div>
   <!-- </h2> -->
         </div>
 
@@ -863,7 +886,7 @@
 this text and the matching comment-closing line at the end of this
 section to re-enable. -->
 
-<section class="section">
+<section class="section" id="pc-comparison-section">
   <div class="container">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
@@ -879,13 +902,13 @@ section to re-enable. -->
 
             <div class="pc-top-row">
               <div class="pc-cell"><span class="pc-label">Source Image</span>
-                <img id="pc-source-img" src="" alt="source" />
+                <img id="pc-source-img" src="" alt="source" loading="lazy" />
               </div>
               <div class="pc-cell"><span class="pc-label">GT</span>
                 <div id="pc-view-gt"></div>
               </div>
               <div class="pc-cell"><span class="pc-label">Target Image</span>
-                <img id="pc-target-img" src="" alt="target" />
+                <img id="pc-target-img" src="" alt="target" loading="lazy" />
               </div>
             </div>
 
@@ -930,6 +953,12 @@ section to re-enable. -->
         import * as THREE from "three";
         import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+        import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+
+        // Reuse cached three.js loader results across repeated loads
+        // (e.g. re-selecting a previously viewed example) instead of
+        // re-fetching identical assets from network every time.
+        THREE.Cache.enabled = true;
 
         /* ================================================================
            EXAMPLES -- add as many as you like. Each has its own source /
@@ -992,6 +1021,7 @@ section to re-enable. -->
 
         function createViewer(containerId, isPrimary) {
           const container = document.getElementById(containerId);
+          container.style.position = "relative";
 
           const scene = new THREE.Scene();
           scene.background = new THREE.Color(0x111111);
@@ -1017,7 +1047,18 @@ section to re-enable. -->
             renderer.domElement.style.pointerEvents = "none";
           }
 
-          const viewer = { scene, camera, renderer, container, controls, currentObject: null, cameraHelpers: [] };
+          // Loading overlay -- shown while a .glb is in flight for this
+          // viewer, so a slow network fetch reads as "loading" instead of
+          // a blank cell. Toggled in loadIntoViewer().
+          const loadingEl = document.createElement("div");
+          loadingEl.className = "pc-loading-overlay";
+          loadingEl.textContent = "Loading point cloud…";
+          container.appendChild(loadingEl);
+
+          const viewer = {
+            scene, camera, renderer, container, controls,
+            currentObject: null, cameraHelpers: [], loadingEl,
+          };
           viewers[containerId] = viewer;
           resizeViewer(viewer);
           return viewer;
@@ -1041,6 +1082,17 @@ section to re-enable. -->
 
         const primary = viewers[PRIMARY_ID];
         const loader = new GLTFLoader();
+
+        // Draco decoder -- only kicks in for .glb files actually exported
+        // with Draco geometry compression (KHR_draco_mesh_compression).
+        // Uncompressed .glb files still load exactly as before; this just
+        // makes it possible to switch to compressed exports (which can be
+        // 5-10x smaller for point cloud data) without any other code
+        // changes. Re-export with e.g.:
+        //   npx @gltf-transform/cli optimize in.glb out.glb --compress draco
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/");
+        loader.setDRACOLoader(dracoLoader);
 
         // ---- MANUAL ORIENTATION CONTROL --------------------------------
         // If a .glb loads sideways / upside-down (e.g. a Y-up vs Z-up
@@ -1098,6 +1150,10 @@ section to re-enable. -->
 
         function loadIntoViewer(url, viewer, { autoFrame = false } = {}) {
           clearViewerObject(viewer);
+          if (viewer.loadingEl) {
+            viewer.loadingEl.textContent = "Loading point cloud…";
+            viewer.loadingEl.style.display = "flex";
+          }
           loader.load(
             url,
             (gltf) => {
@@ -1127,9 +1183,16 @@ section to re-enable. -->
               });
 
               if (autoFrame) frameCameraToObject(gltf.scene, viewer.camera, viewer.controls);
+              if (viewer.loadingEl) viewer.loadingEl.style.display = "none";
             },
             undefined,
-            (err) => console.error(`Failed to load ${url}`, err)
+            (err) => {
+              console.error(`Failed to load ${url}`, err);
+              if (viewer.loadingEl) {
+                viewer.loadingEl.textContent = "Failed to load";
+                viewer.loadingEl.style.display = "flex";
+              }
+            }
           );
         }
 
@@ -1159,8 +1222,6 @@ section to re-enable. -->
         });
         exampleSelect.addEventListener("change", () => loadExample(exampleSelect.value));
 
-        loadExample(Object.keys(EXAMPLES)[0]);
-
         function syncCameras() {
           for (const key in viewers) {
             if (key === PRIMARY_ID) continue;
@@ -1172,8 +1233,32 @@ section to re-enable. -->
           }
         }
 
+        // Section is only "live" (loaded + rendering) while it's actually
+        // near the viewport. This avoids fetching every .glb in this
+        // section immediately at page load (before the visitor has
+        // scrolled anywhere near it), and stops burning GPU cycles on
+        // 7 renderers once the visitor has scrolled past.
+        let sectionVisible = false;
+        let hasLoadedInitial = false;
+
+        const sectionEl = document.getElementById("pc-comparison-section");
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              sectionVisible = entry.isIntersecting;
+              if (entry.isIntersecting && !hasLoadedInitial) {
+                hasLoadedInitial = true;
+                loadExample(Object.keys(EXAMPLES)[0]);
+              }
+            });
+          },
+          { rootMargin: "400px" } // start loading a bit before it's actually on screen
+        );
+        sectionObserver.observe(sectionEl);
+
         function animate() {
           requestAnimationFrame(animate);
+          if (!sectionVisible) return;
           if (primary.controls) primary.controls.update();
           syncCameras();
           for (const key in viewers) {
@@ -1194,7 +1279,7 @@ section to re-enable. -->
 </section>
 
 <!-- Multi-Target Point Cloud Visualization -->
-<section class="section">
+<section class="section" id="mt-comparison-section">
   <div class="container">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
@@ -1252,10 +1337,10 @@ section to re-enable. -->
           <p class="pc-section-title">Source Views</p>
           <div class="pc-source-row">
             <div class="pc-cell"><span class="pc-label">Source View 1</span>
-              <img id="mt-source-img-0" src="" alt="source view 1" />
+              <img id="mt-source-img-0" src="" alt="source view 1" loading="lazy" />
             </div>
             <div class="pc-cell"><span class="pc-label">Source View 2</span>
-              <img id="mt-source-img-1" src="" alt="source view 2" />
+              <img id="mt-source-img-1" src="" alt="source view 2" loading="lazy" />
             </div>
           </div>
 
@@ -1263,10 +1348,10 @@ section to re-enable. -->
           <p class="pc-section-title">Target Views (4 target viewpoints)</p>
           <div class="pc-target-grid">
 
-            <div class="pc-cell"><span class="pc-label">Target View 1</span><img id="mt-target-img-0" src="" alt="target view 1" /></div>
-            <div class="pc-cell"><span class="pc-label">Target View 2</span><img id="mt-target-img-1" src="" alt="target view 2" /></div>
-            <div class="pc-cell"><span class="pc-label">Target View 3</span><img id="mt-target-img-2" src="" alt="target view 3" /></div>
-            <div class="pc-cell"><span class="pc-label">Target View 4</span><img id="mt-target-img-3" src="" alt="target view 4" /></div>
+            <div class="pc-cell"><span class="pc-label">Target View 1</span><img id="mt-target-img-0" src="" alt="target view 1" loading="lazy" /></div>
+            <div class="pc-cell"><span class="pc-label">Target View 2</span><img id="mt-target-img-1" src="" alt="target view 2" loading="lazy" /></div>
+            <div class="pc-cell"><span class="pc-label">Target View 3</span><img id="mt-target-img-2" src="" alt="target view 3" loading="lazy" /></div>
+            <div class="pc-cell"><span class="pc-label">Target View 4</span><img id="mt-target-img-3" src="" alt="target view 4" loading="lazy" /></div>
 
           </div>
 
@@ -1302,6 +1387,9 @@ section to re-enable. -->
         import * as THREE from "three";
         import { OrbitControls } from "three/addons/controls/OrbitControls.js";
         import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+        import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+
+        THREE.Cache.enabled = true;
 
         /* ================================================================
            EXAMPLES -- add as many as you like. Each entry has 2 source
@@ -1380,6 +1468,7 @@ section to re-enable. -->
 
         function createViewer(containerId, isPrimary) {
           const container = document.getElementById(containerId);
+          container.style.position = "relative";
 
           const scene = new THREE.Scene();
           scene.background = new THREE.Color(0x111111);
@@ -1405,7 +1494,15 @@ section to re-enable. -->
             renderer.domElement.style.pointerEvents = "none";
           }
 
-          const viewer = { scene, camera, renderer, container, controls, currentObject: null, cameraHelpers: [] };
+          const loadingEl = document.createElement("div");
+          loadingEl.className = "pc-loading-overlay";
+          loadingEl.textContent = "Loading point cloud…";
+          container.appendChild(loadingEl);
+
+          const viewer = {
+            scene, camera, renderer, container, controls,
+            currentObject: null, cameraHelpers: [], loadingEl,
+          };
           viewers[containerId] = viewer;
           resizeViewer(viewer);
           return viewer;
@@ -1425,6 +1522,10 @@ section to re-enable. -->
 
         const primary = viewers[PRIMARY_ID];
         const loader = new GLTFLoader();
+
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/");
+        loader.setDRACOLoader(dracoLoader);
 
         // ---- MANUAL ORIENTATION CONTROL --------------------------------
         // If a .glb loads sideways / upside-down (e.g. a Y-up vs Z-up
@@ -1482,6 +1583,10 @@ section to re-enable. -->
 
         function loadIntoViewer(url, viewer, { autoFrame = false } = {}) {
           clearViewerObject(viewer);
+          if (viewer.loadingEl) {
+            viewer.loadingEl.textContent = "Loading point cloud…";
+            viewer.loadingEl.style.display = "flex";
+          }
           loader.load(
             url,
             (gltf) => {
@@ -1511,9 +1616,16 @@ section to re-enable. -->
               });
 
               if (autoFrame) frameCameraToObject(gltf.scene, viewer.camera, viewer.controls);
+              if (viewer.loadingEl) viewer.loadingEl.style.display = "none";
             },
             undefined,
-            (err) => console.error(`Failed to load ${url}`, err)
+            (err) => {
+              console.error(`Failed to load ${url}`, err);
+              if (viewer.loadingEl) {
+                viewer.loadingEl.textContent = "Failed to load";
+                viewer.loadingEl.style.display = "flex";
+              }
+            }
           );
         }
 
@@ -1544,8 +1656,6 @@ section to re-enable. -->
         });
         mtExampleSelect.addEventListener("change", () => loadExample(mtExampleSelect.value));
 
-        loadExample(Object.keys(EXAMPLES)[0]);
-
         function syncCameras() {
           for (const key in viewers) {
             if (key === PRIMARY_ID) continue;
@@ -1557,8 +1667,29 @@ section to re-enable. -->
           }
         }
 
+        // Same lazy-load + visibility-gated rendering pattern as the
+        // section above, independent instance for this section.
+        let sectionVisible = false;
+        let hasLoadedInitial = false;
+
+        const sectionEl = document.getElementById("mt-comparison-section");
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              sectionVisible = entry.isIntersecting;
+              if (entry.isIntersecting && !hasLoadedInitial) {
+                hasLoadedInitial = true;
+                loadExample(Object.keys(EXAMPLES)[0]);
+              }
+            });
+          },
+          { rootMargin: "400px" }
+        );
+        sectionObserver.observe(sectionEl);
+
         function animate() {
           requestAnimationFrame(animate);
+          if (!sectionVisible) return;
           if (primary.controls) primary.controls.update();
           syncCameras();
           for (const key in viewers) {
