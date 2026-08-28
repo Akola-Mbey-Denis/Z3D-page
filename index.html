@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="description"
         content="Zero-Shot Novel Depth Synthesis Using 3D Foundation Models Scene Representations">
-  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="keywords" content="Z3D, 3DFM, Novel Depth Synthesis">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zero-Shot Novel Depth Synthesis Using 3D Foundation Models Scene Representations</title>
 
@@ -13,8 +13,7 @@
        <script type="module"> import is parsed. -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script> -->
+ 
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -66,14 +65,13 @@
           <h1 class="title is-1 publication-title">Zero-Shot Novel Depth Synthesis Using 3D Foundation Models Scene Representations</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://denis-mbey-akola.com/">Denis M. Akola</a><sup>1</sup>,</span>
+              <a href="https://denis-mbey-akola.com/">Denis M. Akola</a>,</span>
             <span class="author-block">
-              <a href="https://cs.nyu.edu/~fouhey/">David F. Fouhey</a><sup>1</sup>,</span>
-
+              <a href="https://cs.nyu.edu/~fouhey/">David F. Fouhey</a></span>
           </div>
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>New York University</span>
+            <span class="author-block">New York University</span>
             <!-- <span class="author-block"><sup>2</sup>New York University </span> -->
           </div>
 
@@ -121,7 +119,7 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/z3d_teaser.mp4"
+        <source src="./static/videos/z3d_teaser_video_eccv2026.mp4"
                 type="video/mp4">
       </video>
       <h2 class="subtitle has-text-centered">
@@ -130,33 +128,6 @@
     </div>
   </div>
 </section>
-
-<!-- <section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-
-      <video
-        autoplay
-        muted
-        loop
-        playsinline
-        style="
-          display:block;
-          width:100%;
-          max-width:1100px;
-          height:auto;
-          margin:0 auto;
-          border-radius:12px;
-          box-shadow:0 8px 24px rgba(0,0,0,0.15);
-        ">
-        <source src="./static/videos/z3d-1source-1target.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-
-    </div>
-  </div>
-</section> -->
-
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -199,8 +170,11 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Video</h2>
         <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
+            <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/paper-video_eccv_2026_final.mp4"
+                type="video/mp4">
+      </video>
+       
         </div>
       </div>
     </div>
@@ -319,6 +293,11 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
+}
+
+.pc-more-examples {
+  margin-top: 18px;
+  text-align: center;
 }
 </style>
 <!-- .pc-* styles above are shared with Depth Map Comparison and
@@ -882,9 +861,9 @@
 
 
 
-<!-- Point Cloud Comparison (disabled). Delete the comment-opening line above
-this text and the matching comment-closing line at the end of this
-section to re-enable. -->
+<!-- Point Cloud Comparison.
+     Only the FIRST example lives on this page so it loads fast; the full
+     set with a picker lives on more_examples.html (linked below). -->
 
 <section class="section" id="pc-comparison-section">
   <div class="container">
@@ -893,10 +872,6 @@ section to re-enable. -->
         <h2 class="title is-3">1 Source - 1 Target Point Cloud Comparison</h2>
 
         <div class="pc-page-wrap">
-          <div class="pc-example-selector">
-            <label for="pc-example-select">Example:</label>
-            <select id="pc-example-select"></select>
-          </div>
 
           <div class="pc-viewer-wrap">
 
@@ -945,7 +920,14 @@ section to re-enable. -->
   </p>
 </div>
 
-            <p class="pc-hint">Drag to rotate — all point clouds stay in sync. Pick an example above to switch scenes.</p>
+            <p class="pc-hint">Drag to rotate — all point clouds stay in sync.</p>
+
+            <div class="pc-more-examples">
+              <a href="more_examples.html#pc-comparison-section" target="_blank" rel="noopener"
+                 class="button is-link is-rounded">
+                See more examples&nbsp;→
+              </a>
+            </div>
           </div>
         </div>
 
@@ -956,65 +938,26 @@ section to re-enable. -->
         import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
         // Reuse cached three.js loader results across repeated loads
-        // (e.g. re-selecting a previously viewed example) instead of
-        // re-fetching identical assets from network every time.
+        // instead of re-fetching identical assets from network every time.
         THREE.Cache.enabled = true;
 
         /* ================================================================
-           EXAMPLES -- add as many as you like. Each has its own source /
-           target images and four point clouds. The dropdown below swaps
-           data into the same four viewers, so adding examples never
-           creates new WebGL contexts.
+           Only the first example lives here. The full EXAMPLES map (with
+           a dropdown to pick any of them) lives on more_examples.html.
         ================================================================= */
-
-           const EXAMPLES = {
-           noxapater_00243: {
-            label: "Example-1",
-            sourceImage: "sources-1_src_1target/source_view_0_rgb_image_noxapater_00243.png",
-            targetImage: "sources-1_src_1target/target_rgb_image_view_0_noxapater_00243.png",
-            pointClouds: {
-              gt:     "sources-1_src_1target/gt_metric_noxapater_00243_point_cloud.glb",
-              dd:     "sources-1_src_1target/3dfm_predicted_vggt-dd-noxapater_00243_point_cloud.glb",
-              vggt:   "sources-1_src_1target/3dfm_gt_vggt-noxapater_00243_point_cloud.glb",
-              z3d:    "sources-1_src_1target/3dfm_predicted_vggt-z3d-noxapater_00243_point_cloud.glb",
-              // TODO: point these at your actual WM-variant .glb files
-              wm:     "sources-1_src_1target/3dfm_gt_wm-noxapater_00243_point_cloud.glb",
-              wmDd:   "sources-1_src_1target/3dfm_predicted_wm-dd-noxapater_00243_point_cloud.glb",
-              wmZ3d:  "sources-1_src_1target/3dfm_predicted_wm-z3d-noxapater_00243_point_cloud.glb",
-            },
+        const EXAMPLE = {
+          sourceImage: "sources-1_src_1target/source_view_0_rgb_image_noxapater_00243.png",
+          targetImage: "sources-1_src_1target/target_rgb_image_view_0_noxapater_00243.png",
+          pointClouds: {
+            gt:     "sources-1_src_1target/gt_metric_noxapater_00243_point_cloud.glb",
+            dd:     "sources-1_src_1target/3dfm_predicted_vggt-dd-noxapater_00243_point_cloud.glb",
+            vggt:   "sources-1_src_1target/3dfm_gt_vggt-noxapater_00243_point_cloud.glb",
+            z3d:    "sources-1_src_1target/3dfm_predicted_vggt-z3d-noxapater_00243_point_cloud.glb",
+            wm:     "sources-1_src_1target/3dfm_gt_wm-noxapater_00243_point_cloud.glb",
+            wmDd:   "sources-1_src_1target/3dfm_predicted_wm-dd-noxapater_00243_point_cloud.glb",
+            wmZ3d:  "sources-1_src_1target/3dfm_predicted_wm-z3d-noxapater_00243_point_cloud.glb",
           },
-          // muleshoe_00515: {
-          //   label: "Example-2",
-          //   sourceImage: "sources-1_src_1target/source_view_0_rgb_image_muleshoe_00515.png",
-          //   targetImage: "sources-1_src_1target/target_rgb_image_view_0_muleshoe_00515.png",
-          //   pointClouds: {
-          //     gt:     "sources-1_src_1target/gt_metric_muleshoe_00515_point_cloud.glb",
-          //     dd:     "sources-1_src_1target/3dfm_predicted_vggt_dd_muleshoe_00515_point_cloud.glb",
-          //     vggt:   "sources-1_src_1target/3dfm_gt_vggt-muleshoe_00515_point_cloud.glb",
-          //     z3d:    "sources-1_src_1target/3dfm_predicted_vggt-z3d-muleshoe_00515_point_cloud.glb",
-          //     // TODO: point these at your actual WM-variant .glb files
-          //     wm:     "sources-1_src_1target/3dfm_gt_wm-muleshoe_00515_point_cloud.glb",
-          //     wmDd:   "sources-1_src_1target/3dfm_predicted_wm-dd-muleshoe_00515_point_cloud.glb",
-          //     wmZ3d:  "sources-1_src_1target/3dfm_predicted_wm-z3d-muleshoe_00515_point_cloud.glb",
-          //   },
-          // },
-
-            muleshoe_00016: {
-            label: "Example-2",
-            sourceImage: "sources-1_src_1target/source_view_0_rgb_image_muleshoe_00016.png",
-            targetImage: "sources-1_src_1target/target_rgb_image_view_0_muleshoe_00016.png",
-            pointClouds: {
-              gt:     "sources-1_src_1target/gt_metric_muleshoe_00016_point_cloud.glb",
-              dd:     "sources-1_src_1target/3dfm_predicted_vggt-dd-muleshoe_00016_point_cloud.glb",
-              vggt:   "sources-1_src_1target/3dfm_gt_vggt-muleshoe_00016_point_cloud.glb",
-              z3d:    "sources-1_src_1target/3dfm_predicted_vggt-z3d-muleshoe_00016_point_cloud.glb",
-              // TODO: point these at your actual WM-variant .glb files
-              wm:     "sources-1_src_1target/3dfm_gt_wm-muleshoe_00016_point_cloud.glb",
-              wmDd:   "sources-1_src_1target/3dfm_predicted_wm-dd-muleshoe_00016_point_cloud.glb",
-              wmZ3d:  "sources-1_src_1target/3dfm_predicted_wm-z3d-muleshoe_00016_point_cloud.glb",
-            },
-          },
-        }
+        };
 
         const viewers = {};
         const PRIMARY_ID = "pc-view-gt";
@@ -1085,22 +1028,15 @@ section to re-enable. -->
 
         // Draco decoder -- only kicks in for .glb files actually exported
         // with Draco geometry compression (KHR_draco_mesh_compression).
-        // Uncompressed .glb files still load exactly as before; this just
-        // makes it possible to switch to compressed exports (which can be
-        // 5-10x smaller for point cloud data) without any other code
-        // changes. Re-export with e.g.:
-        //   npx @gltf-transform/cli optimize in.glb out.glb --compress draco
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/");
         loader.setDRACOLoader(dracoLoader);
 
         // ---- MANUAL ORIENTATION CONTROL --------------------------------
-        // If a .glb loads sideways / upside-down (e.g. a Y-up vs Z-up
-        // mismatch from the export pipeline), tweak these degrees and
-        // refresh the page. Applied to every point cloud loaded in this
-        // section, before camera framing and before camera-frustum helpers
-        // are built (so the frustums line up with the corrected pose).
-        const MANUAL_ROTATION_DEG = { x: 0, y: 0, z: 0 };
+        // Default: rotate -90° about X so the data's Z axis points "up"
+        // on screen (three.js itself is Y-up). Flip to +90 instead if
+        // this ends up upside-down for your export pipeline.
+        const MANUAL_ROTATION_DEG = { x: 0, y: 135, z: 65 };
 
         function frameCameraToObject(object, camera, controls) {
           const box = new THREE.Box3().setFromObject(object);
@@ -1135,9 +1071,6 @@ section to re-enable. -->
             viewer.currentObject = null;
           }
 
-          // Camera frustum helpers live directly on viewer.scene (not
-          // nested under currentObject) so they're not double-transformed
-          // by the loaded glTF's own root transform -- clear them here.
           if (viewer.cameraHelpers && viewer.cameraHelpers.length) {
             viewer.cameraHelpers.forEach((helper) => {
               viewer.scene.remove(helper);
@@ -1160,9 +1093,6 @@ section to re-enable. -->
               viewer.scene.add(gltf.scene);
               viewer.currentObject = gltf.scene;
 
-              // Apply the manual orientation fix (edit MANUAL_ROTATION_DEG
-              // above this function) before computing camera-frustum
-              // helpers, so their poses reflect the corrected orientation.
               gltf.scene.rotation.set(
                 THREE.MathUtils.degToRad(MANUAL_ROTATION_DEG.x),
                 THREE.MathUtils.degToRad(MANUAL_ROTATION_DEG.y),
@@ -1170,10 +1100,6 @@ section to re-enable. -->
               );
               gltf.scene.updateMatrixWorld(true);
 
-              // Show any camera(s) embedded in the .glb (source/target
-              // capture poses baked into the point cloud export) as
-              // wireframe frustums, so viewers can see where each shot
-              // was taken from relative to the reconstructed geometry.
               const embeddedCameras = gltf.cameras || [];
               viewer.cameraHelpers = embeddedCameras.map((cam) => {
                 cam.updateMatrixWorld(true);
@@ -1196,10 +1122,7 @@ section to re-enable. -->
           );
         }
 
-        function loadExample(key) {
-          const ex = EXAMPLES[key];
-          if (!ex) return;
-
+        function loadExample(ex) {
           document.getElementById("pc-source-img").src = ex.sourceImage;
           document.getElementById("pc-target-img").src = ex.targetImage;
 
@@ -1212,16 +1135,6 @@ section to re-enable. -->
           loadIntoViewer(ex.pointClouds.wmZ3d, viewers["pc-view-wm-z3d"]);
         }
 
-        /* populate the example dropdown and wire it up */
-        const exampleSelect = document.getElementById("pc-example-select");
-        Object.keys(EXAMPLES).forEach((key) => {
-          const opt = document.createElement("option");
-          opt.value = key;
-          opt.textContent = EXAMPLES[key].label || key;
-          exampleSelect.appendChild(opt);
-        });
-        exampleSelect.addEventListener("change", () => loadExample(exampleSelect.value));
-
         function syncCameras() {
           for (const key in viewers) {
             if (key === PRIMARY_ID) continue;
@@ -1233,26 +1146,19 @@ section to re-enable. -->
           }
         }
 
-        // Section is only "live" (loaded + rendering) while it's actually
-        // near the viewport. This avoids fetching every .glb in this
-        // section immediately at page load (before the visitor has
-        // scrolled anywhere near it), and stops burning GPU cycles on
-        // 7 renderers once the visitor has scrolled past.
-        let sectionVisible = false;
-        let hasLoadedInitial = false;
+        // Kick off the fetch for this single example immediately -- it's
+        // the only one on this page (the rest live on more_examples.html),
+        // so there's no reason to gate it behind scroll position the way
+        // the full gallery page does.
+        loadExample(EXAMPLE);
 
+        // Still gate the render loop on visibility so we're not burning
+        // GPU cycles on 7 renderers while this section is off-screen.
+        let sectionVisible = false;
         const sectionEl = document.getElementById("pc-comparison-section");
         const sectionObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              sectionVisible = entry.isIntersecting;
-              if (entry.isIntersecting && !hasLoadedInitial) {
-                hasLoadedInitial = true;
-                loadExample(Object.keys(EXAMPLES)[0]);
-              }
-            });
-          },
-          { rootMargin: "400px" } // start loading a bit before it's actually on screen
+          (entries) => entries.forEach((entry) => { sectionVisible = entry.isIntersecting; }),
+          { rootMargin: "400px" }
         );
         sectionObserver.observe(sectionEl);
 
@@ -1278,7 +1184,9 @@ section to re-enable. -->
   </div>
 </section>
 
-<!-- Multi-Target Point Cloud Visualization -->
+<!-- Multi-Target Point Cloud Visualization.
+     Only the FIRST example lives on this page; the full set with a
+     picker lives on more_examples.html (linked below). -->
 <section class="section" id="mt-comparison-section">
   <div class="container">
     <div class="columns is-centered has-text-centered">
@@ -1328,10 +1236,6 @@ section to re-enable. -->
         </style>
 
         <div class="pc-page-wrap">
-          <div class="pc-example-selector">
-            <label for="mt-example-select">Example:</label>
-            <select id="mt-example-select"></select>
-          </div>
 
           <!-- Source Views -->
           <p class="pc-section-title">Source Views</p>
@@ -1376,7 +1280,14 @@ section to re-enable. -->
   </p>
 </div>
 
-          <p class="pc-hint">Drag to rotate — all three point clouds stay in sync. Pick an example above to switch scenes.</p>
+          <p class="pc-hint">Drag to rotate — all three point clouds stay in sync.</p>
+
+          <div class="pc-more-examples">
+            <a href="more_examples.html#mt-comparison-section" target="_blank" rel="noopener"
+               class="button is-link is-rounded">
+              See more examples&nbsp;→
+            </a>
+          </div>
         </div>
 
         <!-- NOTE: no second <script type="importmap"> here on purpose --
@@ -1392,72 +1303,25 @@ section to re-enable. -->
         THREE.Cache.enabled = true;
 
         /* ================================================================
-           EXAMPLES -- add as many as you like. Each entry has 2 source
-           images, 4 target images, and 3 combined (all-views-fused)
-           point clouds: GT, Predicted, and WM.
+           Only the first example lives here. The full EXAMPLES map (with
+           a dropdown to pick any of them) lives on more_examples.html.
         ================================================================= */
-        const EXAMPLES = {
-          ihlen_00017: {
-            label: "Example-1",
-            sourceImages: [
-              "multi-target/source_view_0_rgb_image_ihlen_00017.png",
-              "multi-target/source_view_1_rgb_image_ihlen_00017.png",
-            ],
-            targetImages: [
-              "multi-target/target_rgb_image_view_0_ihlen_00017.png",
-              "multi-target/target_rgb_image_view_1_ihlen_00017.png",
-              "multi-target/target_rgb_image_view_2_ihlen_00017.png",
-              "multi-target/target_rgb_image_view_3_ihlen_00017.png",
-            ],
-            combinedPointClouds: {
-              gt:   "multi-target/gt_combined_metric_ihlen_00017_point_cloud.glb",
-              pred: "multi-target/3dfm_combined_predicted_vggt_z3d_ihlen_00017_point_cloud.glb",
-              wm:   "multi-target/3dfm_predicted_wm_z3d-ihlen_00017_point_cloud.glb",
-            },
+        const EXAMPLE = {
+          sourceImages: [
+            "multi-target/source_view_0_rgb_image_ihlen_00017.png",
+            "multi-target/source_view_1_rgb_image_ihlen_00017.png",
+          ],
+          targetImages: [
+            "multi-target/target_rgb_image_view_0_ihlen_00017.png",
+            "multi-target/target_rgb_image_view_1_ihlen_00017.png",
+            "multi-target/target_rgb_image_view_2_ihlen_00017.png",
+            "multi-target/target_rgb_image_view_3_ihlen_00017.png",
+          ],
+          combinedPointClouds: {
+            gt:   "multi-target/gt_combined_metric_ihlen_00017_point_cloud.glb",
+            pred: "multi-target/3dfm_combined_predicted_vggt_z3d_ihlen_00017_point_cloud.glb",
+            wm:   "multi-target/3dfm_predicted_wm_z3d-ihlen_00017_point_cloud.glb",
           },
-          uvalda_00447: {
-            label: "Example-2",
-            sourceImages: [
-              "multi-target/source_view_0_rgb_image_uvalda_00447.png",
-              "multi-target/source_view_1_rgb_image_uvalda_00447.png",
-            ],
-            targetImages: [
-              "multi-target/target_rgb_image_view_0_uvalda_00447.png",
-              "multi-target/target_rgb_image_view_1_uvalda_00447.png",
-              "multi-target/target_rgb_image_view_2_uvalda_00447.png",
-              "multi-target/target_rgb_image_view_3_uvalda_00447.png",
-            ],
-            combinedPointClouds: {
-              gt:   "multi-target/gt_combined_metric_uvalda_00447_point_cloud.glb",
-              pred: "multi-target/3dfm_gt_combined_vggt_z3d_uvalda_00447_point_cloud.glb",
-              wm:   "multi-target/3dfm_predicted_wm_z3d_uvalda_00447_point_cloud.glb",
-            },
-          },
-          ihlen_00242: {
-            label: "Example-3",
-            sourceImages: [
-              "multi-target/source_view_0_rgb_image_ihlen_00242.png",
-              "multi-target/source_view_1_rgb_image_ihlen_00242.png",
-            ],
-            targetImages: [
-              "multi-target/target_rgb_image_view_0_ihlen_00242.png",
-              "multi-target/target_rgb_image_view_1_ihlen_00242.png",
-              "multi-target/target_rgb_image_view_2_ihlen_00242.png",
-              "multi-target/target_rgb_image_view_3_ihlen_00242.png",
-            ],
-            combinedPointClouds: {
-              gt:   "multi-target/gt_combined_metric_ihlen_00242_point_cloud.glb",
-              pred: "multi-target/3dfm_combined_predicted_vggt_z3d_ihlen_00242_point_cloud.glb",
-              wm:   "multi-target/3dfm_predicted_wm_z3d_ihlen_00242_point_cloud.glb",
-            },
-          },
-          // Add more examples here, following the same shape:
-          // another_scene: {
-          //   label: "Another Scene",
-          //   sourceImages: ["...", "..."],
-          //   targetImages: ["...", "...", "...", "..."],
-          //   combinedPointClouds: { gt: "...", pred: "...", wm: "..." },
-          // },
         };
 
         /* ================================================================
@@ -1528,12 +1392,10 @@ section to re-enable. -->
         loader.setDRACOLoader(dracoLoader);
 
         // ---- MANUAL ORIENTATION CONTROL --------------------------------
-        // If a .glb loads sideways / upside-down (e.g. a Y-up vs Z-up
-        // mismatch from the export pipeline), tweak these degrees and
-        // refresh the page. Applied to every point cloud loaded in this
-        // section, before camera framing and before camera-frustum helpers
-        // are built (so the frustums line up with the corrected pose).
-        const MANUAL_ROTATION_DEG = { x: 0, y: 0, z: 0 };
+        // Default: rotate -90° about X so the data's Z axis points "up"
+        // on screen (three.js itself is Y-up). Flip to +90 instead if
+        // this ends up upside-down for your export pipeline.
+        const MANUAL_ROTATION_DEG = { x: -90, y: 0, z: 0 };
 
         function frameCameraToObject(object, camera, controls) {
           const box = new THREE.Box3().setFromObject(object);
@@ -1568,9 +1430,6 @@ section to re-enable. -->
             viewer.currentObject = null;
           }
 
-          // Camera frustum helpers live directly on viewer.scene (not
-          // nested under currentObject) so they're not double-transformed
-          // by the loaded glTF's own root transform -- clear them here.
           if (viewer.cameraHelpers && viewer.cameraHelpers.length) {
             viewer.cameraHelpers.forEach((helper) => {
               viewer.scene.remove(helper);
@@ -1593,9 +1452,6 @@ section to re-enable. -->
               viewer.scene.add(gltf.scene);
               viewer.currentObject = gltf.scene;
 
-              // Apply the manual orientation fix (edit MANUAL_ROTATION_DEG
-              // above this function) before computing camera-frustum
-              // helpers, so their poses reflect the corrected orientation.
               gltf.scene.rotation.set(
                 THREE.MathUtils.degToRad(MANUAL_ROTATION_DEG.x),
                 THREE.MathUtils.degToRad(MANUAL_ROTATION_DEG.y),
@@ -1603,10 +1459,6 @@ section to re-enable. -->
               );
               gltf.scene.updateMatrixWorld(true);
 
-              // Show any camera(s) embedded in the .glb (source/target
-              // capture poses baked into the point cloud export) as
-              // wireframe frustums, so viewers can see where each shot
-              // was taken from relative to the reconstructed geometry.
               const embeddedCameras = gltf.cameras || [];
               viewer.cameraHelpers = embeddedCameras.map((cam) => {
                 cam.updateMatrixWorld(true);
@@ -1629,10 +1481,7 @@ section to re-enable. -->
           );
         }
 
-        function loadExample(key) {
-          const ex = EXAMPLES[key];
-          if (!ex) return;
-
+        function loadExample(ex) {
           ex.sourceImages.forEach((src, i) => {
             const el = document.getElementById(`mt-source-img-${i}`);
             if (el) el.src = src;
@@ -1647,15 +1496,6 @@ section to re-enable. -->
           loadIntoViewer(ex.combinedPointClouds.wm, viewers["mt-view-wm-combined"]);
         }
 
-        const mtExampleSelect = document.getElementById("mt-example-select");
-        Object.keys(EXAMPLES).forEach((key) => {
-          const opt = document.createElement("option");
-          opt.value = key;
-          opt.textContent = EXAMPLES[key].label || key;
-          mtExampleSelect.appendChild(opt);
-        });
-        mtExampleSelect.addEventListener("change", () => loadExample(mtExampleSelect.value));
-
         function syncCameras() {
           for (const key in viewers) {
             if (key === PRIMARY_ID) continue;
@@ -1667,22 +1507,14 @@ section to re-enable. -->
           }
         }
 
-        // Same lazy-load + visibility-gated rendering pattern as the
-        // section above, independent instance for this section.
-        let sectionVisible = false;
-        let hasLoadedInitial = false;
+        // Kick off the fetch for this single example immediately -- the
+        // full example set lives on more_examples.html instead.
+        loadExample(EXAMPLE);
 
+        let sectionVisible = false;
         const sectionEl = document.getElementById("mt-comparison-section");
         const sectionObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              sectionVisible = entry.isIntersecting;
-              if (entry.isIntersecting && !hasLoadedInitial) {
-                hasLoadedInitial = true;
-                loadExample(Object.keys(EXAMPLES)[0]);
-              }
-            });
-          },
+          (entries) => entries.forEach((entry) => { sectionVisible = entry.isIntersecting; }),
           { rootMargin: "400px" }
         );
         sectionObserver.observe(sectionEl);
@@ -1716,7 +1548,7 @@ section to re-enable. -->
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
+    <pre><code>@inproceedings{akola2026z3d,
   author    = {Akola, Denis and David, Fouhey},
   title     = {Zero-Shot Novel Depth Synthesis Using 3D Foundation Models Scene Representations},
   journal   = {ECCV},
