@@ -13,7 +13,7 @@
        <script type="module"> import is parsed. -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
- 
+
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -170,7 +170,7 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Video</h2>
         <div class="publication-video">
-            <video id="teaser" autoplay muted loop playsinline height="100%">
+            <video id="paper-video" controls autoplay muted loop playsinline height="100%">
         <source src="./static/videos/paper-video_eccv_2026_final.mp4"
                 type="video/mp4">
       </video>
@@ -178,7 +178,7 @@
 
 
 </div>
-       
+
         </div>
       </div>
     </div>
@@ -200,7 +200,7 @@
 
 .pc-top-row {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   width: 100%;
   margin-bottom: 20px;
@@ -212,6 +212,24 @@
   grid-template-rows: auto auto;
   gap: 20px;
   width: 100%;
+}
+
+/* Override for the 1-Source/1-Target Point Cloud Comparison grid, which
+   only has 4 cells (VGGT-DD, VGGT-Z3D, WM-DD, WM-Z3D) rather than the 6
+   used by Depth Map Comparison -- laid out 2x2 instead of 3x2. Combined
+   with .pc-grid on the same element so it still inherits display/gap/width
+   and the shared mobile media query below. */
+.pc-grid-pointcloud {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+}
+
+/* Scoped-down version of .pc-page-wrap for the Depth Map Comparison
+   section only -- shrinks its images/depthmaps without touching the
+   Point Cloud Comparison / Multi-Target sections, which reuse the same
+   .pc-page-wrap/.pc-grid/.pc-cell classes at full size. */
+.pc-page-wrap-depth {
+  max-width: 1150px;
 }
 
 @media (max-width: 900px) {
@@ -282,6 +300,16 @@
   text-align: center;
 }
 
+/* Same look as .pc-hint but sits above the viewer instead of below it --
+   used to call out that the GT point cloud is the one you drag, and every
+   other cell just follows it in sync. */
+.pc-hint-top {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 14px;
+  text-align: center;
+}
+
 .pc-example-selector {
   margin-bottom: 16px;
   text-align: center;
@@ -333,7 +361,7 @@
 
 
 
-        <div class="pc-page-wrap">
+        <div class="pc-page-wrap pc-page-wrap-depth">
           <div class="pc-example-selector">
             <label for="depth-example-select">Example:</label>
             <select id="depth-example-select"></select>
@@ -879,6 +907,8 @@
 
           <div class="pc-viewer-wrap">
 
+            <p class="pc-hint-top">Drag on the <strong>GT</strong> point cloud below to rotate the view — every other point cloud follows it in sync.</p>
+
             <div class="pc-top-row">
               <div class="pc-cell"><span class="pc-label">Source Image</span>
                 <img id="pc-source-img" src="" alt="source" loading="lazy" />
@@ -891,21 +921,15 @@
               </div>
             </div>
 
-            <div class="pc-grid">
+            <div class="pc-grid pc-grid-pointcloud">
 
               <div class="pc-cell"><span class="pc-label">VGGT-DD</span>
                 <div id="pc-view-dd"></div>
-              </div>
-              <div class="pc-cell"><span class="pc-label">VGGT</span>
-                <div id="pc-view-vggt"></div>
               </div>
               <div class="pc-cell"><span class="pc-label">VGGT-Z3D</span>
                 <div id="pc-view-z3d"></div>
               </div>
 
-              <div class="pc-cell"><span class="pc-label">WM</span>
-                <div id="pc-view-wm"></div>
-              </div>
               <div class="pc-cell"><span class="pc-label">WM-DD</span>
                 <div id="pc-view-wm-dd"></div>
               </div>
@@ -955,9 +979,7 @@
           pointClouds: {
             gt:     "sources-1_src_1target/gt_metric_noxapater_00243_point_cloud.glb",
             dd:     "sources-1_src_1target/3dfm_predicted_vggt-dd-noxapater_00243_point_cloud.glb",
-            vggt:   "sources-1_src_1target/3dfm_gt_vggt-noxapater_00243_point_cloud.glb",
             z3d:    "sources-1_src_1target/3dfm_predicted_vggt-z3d-noxapater_00243_point_cloud.glb",
-            wm:     "sources-1_src_1target/3dfm_gt_wm-noxapater_00243_point_cloud.glb",
             wmDd:   "sources-1_src_1target/3dfm_predicted_wm-dd-noxapater_00243_point_cloud.glb",
             wmZ3d:  "sources-1_src_1target/3dfm_predicted_wm-z3d-noxapater_00243_point_cloud.glb",
           },
@@ -1021,9 +1043,7 @@
 
         createViewer(PRIMARY_ID, true);
         createViewer("pc-view-dd", false);
-        createViewer("pc-view-vggt", false);
         createViewer("pc-view-z3d", false);
-        createViewer("pc-view-wm", false);
         createViewer("pc-view-wm-dd", false);
         createViewer("pc-view-wm-z3d", false);
 
@@ -1046,18 +1066,35 @@
           const box = new THREE.Box3().setFromObject(object);
           const size = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
+          // Bounding SPHERE (not just maxDim) so the min-zoom clamp below
+          // accounts for the object's full diagonal extent, not just its
+          // longest single axis -- a box with size (1,1,1) has points up
+          // to 0.87 units from center, well past maxDim*0.5.
+          const sphere = box.getBoundingSphere(new THREE.Sphere());
+          const radius = sphere.radius || 1;
 
           const maxDim = Math.max(size.x, size.y, size.z) || 1;
-          const ZOOM_FACTOR = 0.60; // < 1 pulls the camera closer so the point cloud fills more of the frame
+          const ZOOM_FACTOR = 1.45; // > 1 pulls the camera back so the whole point cloud stays inside the frame
           const fitDist = (maxDim / (2 * Math.tan((Math.PI * camera.fov) / 360))) * ZOOM_FACTOR;
 
           camera.position.set(center.x + fitDist, center.y + fitDist * 0.6, center.z + fitDist);
-          camera.near = maxDim / 100;
-          camera.far = maxDim * 100;
+          camera.near = Math.max(radius / 100, 0.001);
+          camera.far = radius * 200;
           camera.updateProjectionMatrix();
 
           if (controls) {
             controls.target.copy(center);
+            // Without these, OrbitControls lets scroll-zoom dolly the
+            // camera arbitrarily close/far. Zooming past the cloud's
+            // bounding sphere moves it behind the camera's near plane
+            // (nothing left to render -- reads as the point cloud
+            // "disappearing" into the black background); zooming out too
+            // far shrinks it to nothing. minDistance is pinned to the
+            // sphere radius (with margin) rather than maxDim, since
+            // maxDim alone can be smaller than the cloud's actual
+            // diagonal extent and let the camera sneak inside it.
+            controls.minDistance = radius * 0.70;
+            controls.maxDistance = radius * 2.0;
             controls.update();
           }
         }
@@ -1132,9 +1169,7 @@
 
           loadIntoViewer(ex.pointClouds.gt, primary, { autoFrame: true });
           loadIntoViewer(ex.pointClouds.dd, viewers["pc-view-dd"]);
-          loadIntoViewer(ex.pointClouds.vggt, viewers["pc-view-vggt"]);
           loadIntoViewer(ex.pointClouds.z3d, viewers["pc-view-z3d"]);
-          loadIntoViewer(ex.pointClouds.wm, viewers["pc-view-wm"]);
           loadIntoViewer(ex.pointClouds.wmDd, viewers["pc-view-wm-dd"]);
           loadIntoViewer(ex.pointClouds.wmZ3d, viewers["pc-view-wm-z3d"]);
         }
@@ -1265,6 +1300,7 @@
 
           <!-- Combined point clouds, synchronized -->
           <p class="pc-section-title">Combined Point Clouds (all target views fused)</p>
+          <p class="pc-hint-top">Drag on the <strong>GT</strong> point cloud below to rotate the view — the other two follow it in sync.</p>
           <div class="pc-combined-row">
             <div class="pc-cell"><span class="pc-label">GT</span>
               <div id="mt-view-gt-combined"></div>
@@ -1405,18 +1441,35 @@
           const box = new THREE.Box3().setFromObject(object);
           const size = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
+          // Bounding SPHERE (not just maxDim) so the min-zoom clamp below
+          // accounts for the object's full diagonal extent, not just its
+          // longest single axis -- a box with size (1,1,1) has points up
+          // to 0.87 units from center, well past maxDim*0.5.
+          const sphere = box.getBoundingSphere(new THREE.Sphere());
+          const radius = sphere.radius || 1;
 
           const maxDim = Math.max(size.x, size.y, size.z) || 1;
-          const ZOOM_FACTOR = 0.42; // < 1 pulls the camera closer so the point cloud fills more of the frame
+          const ZOOM_FACTOR = 1.45; // > 1 pulls the camera back so the whole point cloud stays inside the frame
           const fitDist = (maxDim / (2 * Math.tan((Math.PI * camera.fov) / 360))) * ZOOM_FACTOR;
 
           camera.position.set(center.x + fitDist, center.y + fitDist * 0.6, center.z + fitDist);
-          camera.near = maxDim / 100;
-          camera.far = maxDim * 100;
+          camera.near = Math.max(radius / 100, 0.001);
+          camera.far = radius * 200;
           camera.updateProjectionMatrix();
 
           if (controls) {
             controls.target.copy(center);
+            // Without these, OrbitControls lets scroll-zoom dolly the
+            // camera arbitrarily close/far. Zooming past the cloud's
+            // bounding sphere moves it behind the camera's near plane
+            // (nothing left to render -- reads as the point cloud
+            // "disappearing" into the black background); zooming out too
+            // far shrinks it to nothing. minDistance is pinned to the
+            // sphere radius (with margin) rather than maxDim, since
+            // maxDim alone can be smaller than the cloud's actual
+            // diagonal extent and let the camera sneak inside it.
+            controls.minDistance = radius * 0.70;
+            controls.maxDistance = radius * 2.0;
             controls.update();
           }
         }
