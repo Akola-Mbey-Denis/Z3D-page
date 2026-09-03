@@ -249,6 +249,22 @@
     }
   }
 
+  .dg-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 1100px) {
+    .dg-grid-4 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .dg-grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   .dg-cell {
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -1072,7 +1088,7 @@
             <select id="wm-dg-example-select"></select>
           </div>
 
-          <div class="dg-grid">
+          <div class="dg-grid dg-grid-4">
 
             <!-- Column 1: Source / Target -->
             <div class="dg-cell"><span class="dg-label">Source Image</span>
@@ -1082,15 +1098,7 @@
               <img id="wm-dg-target-img" src="" alt="target" loading="lazy" />
             </div>
 
-            <!-- Column 2: GT Depth / WM Depth -->
-            <div class="dg-cell"><span class="dg-label">GT</span>
-              <img id="wm-dg-gt-depth-img" src="" alt="gt depth" loading="lazy" />
-            </div>
-            <div class="dg-cell"><span class="dg-label">WM</span>
-              <img id="wm-dg-pred-depth-img" src="" alt="wm depth" loading="lazy" />
-            </div>
-
-            <!-- Column 3: WM-DD Depth / Z3D-WM Depth -->
+            <!-- Column 2: WM-DD Depth / Z3D-WM Depth -->
             <div class="dg-cell"><span class="dg-label">WM-DD</span>
               <img id="wm-dg-dd-depth-img" src="" alt="wm-dd depth" loading="lazy" />
             </div>
@@ -1098,7 +1106,7 @@
               <img id="wm-dg-z3d-depth-img" src="" alt="z3d-wm depth" loading="lazy" />
             </div>
 
-            <!-- Column 4: WM-DD Depth Gradient / Z3D-WM Depth Gradient -->
+            <!-- Column 3: WM-DD Depth Gradient / Z3D-WM Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">WM-DD Depth Grad</span>
               <img id="wm-dg-dd-grad-img" src="" alt="wm-dd depth gradient" loading="lazy" />
             </div>
@@ -1106,7 +1114,7 @@
               <img id="wm-dg-z3d-grad-img" src="" alt="z3d-wm depth gradient" loading="lazy" />
             </div>
 
-            <!-- Column 5: WM-DD Zoomed Depth Gradient / Z3D-WM Zoomed Depth Gradient -->
+            <!-- Column 4: WM-DD Zoomed Depth Gradient / Z3D-WM Zoomed Depth Gradient -->
             <div class="dg-cell"><span class="dg-label">WM-DD</span>
               <img id="wm-dg-dd-grad-zoom-img" src="" alt="wm-dd zoomed depth gradient" loading="lazy" />
             </div>
@@ -1142,8 +1150,6 @@
             label: "Example-1",
             sourceImage: "depth_gradients/source_view_0_rgb_image_ihlen_00340.png",
             targetImage: "depth_gradients/target_rgb_image_view_0_ihlen_00340.png",
-            gtDepth: "depth_gradients/gt_target_depth_map_view_0_ihlen_00340.png",
-            predDepth: "depth_gradients/pred_target_depth_map_view_3fdm_tokens_view_wm_0_ihlen_00340.png",
             ddDepth: "depth_gradients/pred_target_depth_map_view_sample_view_wm-dd-0_0_ihlen_00340.png",
             z3dDepth: "depth_gradients/pred_target_depth_map_view_sample_view_wm_z3d_0_0_ihlen_00340.png",
             ddGrad: "depth_gradients/pred_target_depth_map_view_3fdm_tokens_view_wm_dd_ihlen_00340_GD.png",
@@ -1155,8 +1161,6 @@
             label: "Example-2",
             sourceImage: "depth_gradients/source_view_0_rgb_image_muleshoe_00906.png",
             targetImage: "depth_gradients/target_rgb_image_view_0_muleshoe_00906.png",
-            gtDepth: "depth_gradients/gt_target_depth_map_view_0_muleshoe_00906.png",
-            predDepth: "depth_gradients/pred_target_depth_map_view_3fdm_tokens_view_wm_0_muleshoe_00906.png",
             ddDepth: "depth_gradients/pred_target_depth_map_view_sample_view_wm-dd-0_0_muleshoe_00906.png",
             z3dDepth: "depth_gradients/pred_target_depth_map_view_sample_view_wm_z3d_0_0_muleshoe_00906.png",
             ddGrad: "depth_gradients/pred_target_depth_map_view_3fdm_tokens_view_wm_dd_muleshoe_00906_GD.png",
@@ -1172,8 +1176,6 @@
 
           document.getElementById("wm-dg-source-img").src = ex.sourceImage;
           document.getElementById("wm-dg-target-img").src = ex.targetImage;
-          document.getElementById("wm-dg-gt-depth-img").src = ex.gtDepth;
-          document.getElementById("wm-dg-pred-depth-img").src = ex.predDepth;
           document.getElementById("wm-dg-dd-depth-img").src = ex.ddDepth;
           document.getElementById("wm-dg-z3d-depth-img").src = ex.z3dDepth;
           document.getElementById("wm-dg-dd-grad-img").src = ex.ddGrad;
